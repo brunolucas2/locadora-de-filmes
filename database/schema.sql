@@ -5,6 +5,7 @@ CREATE TABLE usuarios (
     nome VARCHAR(100) NOT NULL,
     cpf VARCHAR(11) NOT NULL,
     senha_hash VARCHAR(100) NOT NULL,
+    nivel ENUM('administrador', 'comum') NOT NULL DEFAULT 'comum';
     data_de_cadastro DATE DEFAULT (CURRENT_DATE),
 
     PRIMARY KEY (usuario_id),
@@ -49,7 +50,7 @@ CREATE TABLE emprestimos (
     FOREIGN KEY (cliente_id) 
         REFERENCES clientes (cliente_id),
     FOREIGN KEY (filme_id) 
-        REFERENCES clientes (filme_id),
+        REFERENCES filmes (filme_id),
     FOREIGN KEY (usuario_id)
         REFERENCES usuarios (usuario_id)
 );
