@@ -1,70 +1,89 @@
 =<?php
 
-require_once dirname(__DIR__) . "/database/conn.php";
-require_once dirname(__DIR__) . "/database/querys.php";
+    require_once dirname(__DIR__) . "/database/conn.php";
+    require_once dirname(__DIR__) . "/database/querys.php";
+    require_once dirname(__DIR__) . "/utils/criptografarCPF.php";
 
-function hashearSenha (string $senha): string
-{
-    $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
+    function hashearSenha(string $senha): string
+    {
+        $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
-    return $senha_hash;
-}
+        return $senha_hash;
+    }
 
-function cadastrarUsuario (array $usuario): void
-{
-    global $pdo, $usuariosSQL;
+    function cadastrarUsuario(array $usuario): void
+    {
+        global $pdo, $usuariosSQL;
 
-    $stmt = $pdo->prepare($usuariosSQL["cadastrarUsuario"]);
-    $stmt->execute([
-        ":nome" => $usuario["nome"],
-        ":cpf" => $usuario["cpf"],
-        ":senha_hash" => hashearSenha($usuario["senha"])
-    ]);
-}
+        $stmt = $pdo->prepare($usuariosSQL["cadastrarUsuario"]);
+        $stmt->execute([
+            ":nome" => $usuario["nome"],
+            ":cpf" => criptografarCPF($usuario["cpf"]),
+            ":senha_hash" => hashearSenha($usuario["senha"])
+        ]);
+    }
 
-function buscarUsuarios(): array
-{
-    global $pdo, $usuariosSQL;
+    function buscarUsuarios(): array
+    {
+        global $pdo, $usuariosSQL;
 
-    $stmt = $pdo->prepare($usuariosSQL["buscarUsuarios"]);
-    $stmt->execute();
+        $stmt = $pdo->prepare($usuariosSQL["buscarUsuarios"]);
+        $stmt->execute();
+        $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
-}
+        foreach ($usuarios as $usuario) {
+            $cpf = descriptografarCPF($usuario["cpf"]);
 
-function buscarUsuario (int $id): array|false
-{
-    global $pdo, $usuariosSQL;
+            $usuario["cpf"] = $cpf !== false ? $cpf : "CPF indisponível";
+        }
 
-    $stmt = $pdo->prepare($usuariosSQL["buscarUsuario"]);
-    $stmt->execute([":id" => $id]);
+        unset($usuario);
 
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-}
+        return $usuarios;
+    }
 
-function atualizarUsuario(array $usuario): bool
-{
-    global $pdo, $usuariosSQL;
+    function buscarUsuario(int $id): array|false
+    {
+        global $pdo, $usuariosSQL;
 
-    $senha = $usuario["senha"] ?? "";
+        $stmt = $pdo->prepare($usuariosSQL["buscarUsuario"]);
+        $stmt->execute([":id" => $id]);
 
-    $stmt = $pdo->prepare($usuariosSQL["atualizarUsuario"]);
+        $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    return $stmt->execute([
-        ":nome" => $usuario["nome"] ?? "",
-        ":cpf" => $usuario["cpf"] ?? "",
-        ":senha_hash" => $senha !== "" ? hashearSenha($senha) : "",
-        ":id" => $usuario["id"]
-    ]);
-}
+        if ($usuario === false) {
+            return false;
+        }
 
-function deletarUsuario (int $id): bool
-{
-    global $pdo, $usuariosSQL;
+        $cpf = descriptografarCPF($usuario["cpf"]);
+        $usuario["cpf"] = $cpf !== false ? $cpf : "CPF indisponível";
 
-    $stmt = $pdo->prepare($usuariosSQL["deletarUsuario"]);
+        return $usuario;
+    }
 
-    $stmt->execute(["id" => $id]);
+    function atualizarUsuario(array $usuario): bool
+    {
+        global $pdo, $usuariosSQL;
 
-    return $stmt->rowCount() > 0;
-}
+        $senha = $usuario["senha"] ?? "";
+
+        $stmt = $pdo->prepare($usuariosSQL["atualizarUsuario"]);
+
+        return $stmt->execute([
+            ":nome" => $usuario["nome"] ?? "",
+            ":cpf" => criptografarCPF($usuario["cpf"]) ?? "",
+            ":senha_hash" => $senha !== "" ? hashearSenha($senha) : "",
+            ":id" => $usuario["id"]
+        ]);
+    }
+
+    function deletarUsuario(int $id): bool
+    {
+        global $pdo, $usuariosSQL;
+
+        $stmt = $pdo->prepare($usuariosSQL["deletarUsuario"]);
+
+        $stmt->execute(["id" => $id]);
+
+        return $stmt->rowCount() > 0;
+    }

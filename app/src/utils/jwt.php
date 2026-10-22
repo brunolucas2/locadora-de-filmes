@@ -13,10 +13,10 @@ function obterChaveJWT(): string
         return $chave;
     }
 
-    $caminho = dirname(__DIR__, 2) . "/.env";
+    $caminho = dirname(__DIR__, 3) . "/.env";
 
     if (!is_readable($caminho)) {
-        throw new RuntimeException("Arquivo .env não encontrado ou sem permissão de leitura.");
+        throw new RuntimeException("JWT_ERROR: Arquivo .env não encontrado ou sem permissão de leitura.");
     }
 
     $env = parse_ini_file($caminho, false, INI_SCANNER_RAW);

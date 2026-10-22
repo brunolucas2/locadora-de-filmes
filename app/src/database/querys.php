@@ -3,11 +3,11 @@
 $authSQL = [
     "autenticar" => "
         SELECT senha_hash FROM usuarios
-        WHERE cpf = :cpf;
+        WHERE email = :email;
     ",
     "buscarDados" => "
         SELECT usuario_id, nivel FROM usuarios
-        WHERE cpf = :cpf;
+        WHERE email = :email;
     "
 ];
 

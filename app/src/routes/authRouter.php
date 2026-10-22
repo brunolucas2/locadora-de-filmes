@@ -1,63 +1,87 @@
 <?php
 
-require_once dirname(__DIR__) . "/database/conn.php";
-require_once dirname(__DIR__) . "/database/querys.php";
-require_once dirname(__DIR__) . "/utils/jwt.php";
-
-function auth(array $usuario): string|false
-{
-    global $pdo, $authSQL;
-
-    if (
-        !isset($usuario["cpf"], $usuario["senha"]) ||
-        !is_string($usuario["cpf"]) ||
-        !is_string($usuario["senha"]) ||
-        $usuario["senha"] === ""
-    ) {
-        return false;
-    }
-
-    $stmt = $pdo->prepare($authSQL["autenticar"]);
-    $stmt->execute([
-        ":cpf" => $usuario["cpf"]
-    ]);
-
-    $usuarioBanco = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($usuarioBanco === false) {
-        return false;
-    }
-
-    if (!password_verify($usuario["senha"], $usuarioBanco["senha_hash"])) {
-        return false;
-    }
-
-    $dados = buscarDados($usuario["cpf"]);
-
-    if ($dados === false) {
-        return false;
-    }
-
-    return gerarJWT($dados["id"], $dados["nivel"]);
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    ini_set("session.cookie_httponly", "1");
+    session_start();
 }
 
-function buscarDados(string $cpf): array|false
-{
-    global $pdo, $authSQL;
+require_once dirname(__DIR__) . "/controllers/authController.php";
 
-    $stmt = $pdo->prepare($authSQL["buscarDados"]);
-    $stmt->execute([
-        ":cpf" => $cpf
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    header("Allow: POST");
+    http_response_code(405);
+    exit("Método não permitido.");
+}
+
+$email = $_POST["email"] ?? "";
+$senha = $_POST["senha"] ?? "";
+
+if (!is_string($email) || !is_string($senha)) {
+    http_response_code(400);
+    exit("Dados inválidos.");
+}
+
+$email = trim($email);
+
+if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    http_response_code(400);
+    exit("Informe um e-mail válido.");
+}
+
+if ($senha === "") {
+    http_response_code(400);
+    exit("Informe a senha.");
+}
+
+if ($senha === "") {
+    http_response_code(400);
+    exit("Informe a senha.");
+}
+
+try {
+    $jwt = auth([
+        "email" => $email,
+        "senha" => $senha
     ]);
 
-    $dados = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($dados === false) {
-        return false;
+    if ($jwt === false) {
+        http_response_code(401);
+        exit("email ou senha inválidos.");
     }
 
-    return [
-        "id" => (int) $dados["usuario_id"],
-        "nivel" => $dados["nivel"]
-    ];
+    // Disponível porque o controller já inclui jwt.php.
+    $dados = validarJWT($jwt);
+
+    if ($dados === false) {
+        http_response_code(500);
+        exit("Erro ao validar autorização.");
+    }
+} catch (PDOException $e) {
+    error_log($e->getMessage());
+    http_response_code(500);
+    exit("Erro no servidor.");
+} catch (RuntimeException | InvalidArgumentException $e) {
+    error_log($e->getMessage());
+    http_response_code(500);
+    exit("Erro ao gerar autorização.");
 }
+
+session_regenerate_id(true);
+
+header("ext/html; charset=UTF-8");
+
+setcookie("access_token", $jwt, [
+    "expires" => $dados->exp,
+    "path" => "/",
+    "secure" => false,
+    "httponly" => true,
+    "samesite" => "Strict"
+]);
+
+$_SESSION["usuario"] = [
+    "id" => (int) $dados->sub,
+    "nivel" => $dados->nivel
+];
+
+header("Location: ../../index.php");
+exit;
