@@ -46,7 +46,7 @@ CREATE TABLE emprestimos (
     filme_id INT NOT NULL,
     usuario_id INT NOT NULL,
     status_emprestimo ENUM('ativo', 'inativo') NOT NULL DEFAULT 'ativo',
-    data_da_devolucao DATE NOT NULL,
+    data_da_devolucao DATE NULL,
     data_do_emprestimo DATE DEFAULT (CURRENT_DATE),
 
     PRIMARY KEY (emprestimo_id),
