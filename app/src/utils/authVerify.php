@@ -1,29 +1,26 @@
+
 <?php
 
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    ini_set("session.cookie_httponly", "1");
-    session_start();
-}
+require_once __DIR__ . "/jwt.php";
 
 function verificarAutorizacao(bool $admin = false): void
 {
-    if (
-        !isset($_SESSION["usuario"]["id"]) ||
-        !isset($_SESSION["usuario"]["nivel"])
-    ) {
+    $token = $_COOKIE["access_token"] ?? "";
+
+    if ($token === "") {
         http_response_code(401);
         exit("Usuário não autenticado.");
     }
 
-    $nivel = $_SESSION["usuario"]["nivel"];
+    $dados = validarJWT($token);
 
-    if (!in_array($nivel, ["administrador", "comum"], true)) {
-        http_response_code(403);
-        exit("Acesso negado.");
+    if ($dados === false) {
+        http_response_code(401);
+        exit("Token inválido ou expirado.");
     }
 
-    if ($admin && $nivel !== "administrador") {
+    if ($admin && $dados->nivel !== "administrador") {
         http_response_code(403);
-        exit("Apenas administradores podem acessar.");
+        exit("Acesso permitido apenas para administradores.");
     }
 }
