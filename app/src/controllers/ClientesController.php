@@ -61,15 +61,17 @@ function atualizarCliente (array $cliente): bool
 
     $stmt = $pdo->prepare($clientesSQL["atualizarCliente"]);
 
-    return $stmt-> execute([
+    $stmt-> execute([
         ":nome" => $cliente["nome"] ?? "",
-        ":cpf" => criptografarCPF($cliente["cpf"]) ?? "",
+        ":cpf" => empty($cliente["cpf"]) ? "" : criptografarCPF($cliente["cpf"]),
         ":telefone" => $cliente["telefone"] ?? "",
         ":id" => $cliente["id"]
     ]);
+
+    return $stmt->rowCount() > 0;
 }
 
-function deletarCLiente (int $id): bool
+function deletarCliente (int $id): bool
 {
     global $pdo, $clientesSQL;
 

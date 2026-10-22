@@ -2,7 +2,7 @@
 $envPath = dirname(__DIR__, 3) . '/.env';
 $env = parse_ini_file($envPath);
 
-$chave = $env["CPF_SECRET"];
+$chave = sodium_hex2bin($env["CPF_SECRET"]);
 
 function criptografarCPF(string $cpf): string
 {
