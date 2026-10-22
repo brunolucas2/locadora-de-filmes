@@ -5,6 +5,10 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
+require_once dirname(__DIR__) . "/utils/verificarAutorizacao.php";
+
+verificarAutorizacao();
+
 require_once dirname(__DIR__) . "/controllers/EmprestimosController.php";
 require_once dirname(__DIR__) . "/utils/validarPost.php";
 

@@ -1,5 +1,6 @@
 <?php
 
+
 if (session_status() !== PHP_SESSION_ACTIVE) {
     ini_set("session.cookie_httponly", "1");
     session_start();
@@ -68,7 +69,7 @@ try {
 
 session_regenerate_id(true);
 
-header("ext/html; charset=UTF-8");
+header("Content-Type: text/html; charset=UTF-8");
 
 setcookie("access_token", $jwt, [
     "expires" => $dados->exp,
