@@ -48,12 +48,16 @@ $usuariosSQL = [
     "cadastrarUsuario" => "
         INSERT INTO usuarios (
             nome,
+            email,
             cpf,
-            senha_hash
+            senha_hash,
+            nivel
         ) VALUES (
             :nome,
+            :email,
             :cpf,
-            :senha_hash
+            :senha_hash,
+            :nivel
         );
     ",
     "buscarUsuarios" => "

@@ -18,8 +18,10 @@
         $stmt = $pdo->prepare($usuariosSQL["cadastrarUsuario"]);
         $stmt->execute([
             ":nome" => $usuario["nome"],
+            ":email" => $usuario["email"],
             ":cpf" => criptografarCPF($usuario["cpf"]),
-            ":senha_hash" => hashearSenha($usuario["senha"])
+            ":senha_hash" => hashearSenha($usuario["senha"]),
+            ":nivel" => $usuario["nivel"] ?? "comum"
         ]);
     }
 
@@ -31,7 +33,7 @@
         $stmt->execute();
         $usuarios = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        foreach ($usuarios as $usuario) {
+        foreach ($usuarios as &$usuario) {
             $cpf = descriptografarCPF($usuario["cpf"]);
 
             $usuario["cpf"] = $cpf !== false ? $cpf : "CPF indisponível";
@@ -71,7 +73,7 @@
 
         return $stmt->execute([
             ":nome" => $usuario["nome"] ?? "",
-            ":cpf" => criptografarCPF($usuario["cpf"]) ?? "",
+            ":cpf" => empty($cliente["cpf"]) ? "" : criptografarCPF($cliente["cpf"]),
             ":senha_hash" => $senha !== "" ? hashearSenha($senha) : "",
             ":id" => $usuario["id"]
         ]);
