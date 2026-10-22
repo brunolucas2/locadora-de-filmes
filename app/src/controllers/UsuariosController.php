@@ -1,4 +1,4 @@
-=<?php
+<?php
 
     require_once dirname(__DIR__) . "/database/conn.php";
     require_once dirname(__DIR__) . "/database/querys.php";

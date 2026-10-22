@@ -1,0 +1,101 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f5ff;
+    color: #1e293b;
+}
+
+header {
+    background-color: #1d4ed8;
+    color: white;
+    padding: 20px;
+}
+
+nav {
+    background-color: #2563eb;
+    padding: 15px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-right: 20px;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+main {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+}
+
+h1, h2, h3 {
+    color: #1d4ed8;
+}
+
+form {
+    margin: 20px 0;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0 15px;
+    border: 1px solid #93c5fd;
+    border-radius: 5px;
+    font: inherit;
+}
+
+button {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #1d4ed8;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #bfdbfe;
+    text-align: left;
+}
+
+th {
+    background-color: #dbeafe;
+}
+
+tr:nth-child(even) {
+    background-color: #f8faff;
+}
+
+a {
+    color: #2563eb;
+}
+
+.mensagem {
+    padding: 12px;
+    margin: 15px 0;
+    background-color: #dbeafe;
+    border-radius: 5px;
+}

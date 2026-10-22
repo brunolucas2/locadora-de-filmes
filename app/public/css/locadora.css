@@ -1,0 +1,55 @@
+nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+nav button {
+    background: #1d4ed8;
+}
+
+nav button.ativa {
+    background: #1e40af;
+}
+
+nav a {
+    color: white;
+}
+
+.logout {
+    margin: 0 0 0 auto;
+}
+
+main {
+    max-width: 900px;
+}
+
+.pagina[hidden] {
+    display: none;
+}
+
+.pagina form {
+    max-width: 500px;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+}
+
+h3 {
+    margin-top: 30px;
+}
+
+.tabela {
+    overflow-x: auto;
+    margin-top: 10px;
+}
+
+#mensagem:not(:empty) {
+    padding: 10px;
+    background-color: #dbeafe;
+    border-radius: 5px;
+}

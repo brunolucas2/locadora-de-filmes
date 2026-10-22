@@ -81,8 +81,9 @@ setcookie("access_token", $jwt, [
 
 $_SESSION["usuario"] = [
     "id" => (int) $dados->sub,
-    "nivel" => $dados->nivel
+    "nivel" => $dados->nivel,
+    "exp" => $dados->exp
 ];
 
-header("Location: ../../index.php");
+header("Location: ../../../index.php");
 exit;
